@@ -47,7 +47,6 @@ public class CarModelDTO {
 
         CarModelDTO that = (CarModelDTO) o;
 
-        // Сравнение по ID или совпадению brand и model
         return id == that.id ||
                 (Objects.equals(brand, that.brand) &&
                         Objects.equals(model, that.model));
@@ -55,7 +54,6 @@ public class CarModelDTO {
 
     @Override
     public int hashCode() {
-        // Хэш-код, который учитывает ID, brand и model
         return Objects.hash(id, brand, model);
     }
 

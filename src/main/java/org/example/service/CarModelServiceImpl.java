@@ -98,6 +98,6 @@ public class CarModelServiceImpl implements CarModelService {
         for (CarModelDTO car : carModelList) {
             brandCountMap.put(car.getBrand(), brandCountMap.getOrDefault(car.getBrand(), 0) + 1);
         }
-        return brandCountMap; // Возвращает количество автомобилей по маркам
+        return brandCountMap;
     }
 }
