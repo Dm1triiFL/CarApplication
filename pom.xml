@@ -32,6 +32,11 @@
             <version>5.9.3</version> <!-- Заменено на фиксированную версию -->
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.1.214</version> <!-- Используйте последнюю версию -->
+        </dependency>
     </dependencies>
 
 </project>
