@@ -10,11 +10,13 @@ public class CarService {
     private Random random = new Random();
 
     public CarDTO createCarWithRandomValues(int id, DealershipDTO dealership) {
+        // Измерение времени
+        long startTime = System.nanoTime();
+
         String[] states = {"Не занят", "В пути", "В наличии", "Продан", "Забронирован"};
         String[] configurations = {"Базовая", "Специальная", "Спортивная"};
         String[] colors = {"Красный", "Синий", "Черный", "Белый", "Серый"};
 
-        // Генерация случайных данных для модели автомобиля
         CarModelDTO carModel = new CarModelDTO(
                 id,
                 "Brand " + (random.nextInt(10) + 1),
@@ -26,10 +28,23 @@ public class CarService {
         String state = states[random.nextInt(states.length)];
         String configuration = configurations[random.nextInt(configurations.length)];
         String color = colors[random.nextInt(colors.length)];
-        double price = 20000 + (random.nextDouble() * 30000);
+        double price = 50000 + (random.nextDouble() * 50000);
 
-        return new CarDTO(id, carModel, dealership, state, configuration, color, price);
+        CarDTO car = new CarDTO(id, carModel, dealership, state, configuration, color, price);
+
+        // Измерение времени окончания
+        long endTime = System.nanoTime();
+        System.out.println("Время выполнения createCarWithRandomValues: " + (endTime - startTime) + " нс");
+
+        return car;
+    }
+
+    public void measurePerformanceForMultipleCreations(int numberOfCreations, DealershipDTO dealership) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < numberOfCreations; i++) {
+            createCarWithRandomValues(i, dealership);
+        }
+        long endTime = System.nanoTime();
+        System.out.println("Время выполнения для " + numberOfCreations + " созданий: " + (endTime - startTime) + " нс");
     }
 }
-
-
