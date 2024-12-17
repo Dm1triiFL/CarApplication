@@ -10,7 +10,10 @@ public class CarService {
     private Random random = new Random();
 
     public CarDTO createCarWithRandomValues(int id, DealershipDTO dealership) {
-        // Измерение времени
+
+
+
+        // измерение времни
         long startTime = System.nanoTime();
 
         String[] states = {"Не занят", "В пути", "В наличии", "Продан", "Забронирован"};
@@ -32,7 +35,7 @@ public class CarService {
 
         CarDTO car = new CarDTO(id, carModel, dealership, state, configuration, color, price);
 
-        // Измерение времени окончания
+        // время окончания
         long endTime = System.nanoTime();
         System.out.println("Время выполнения createCarWithRandomValues: " + (endTime - startTime) + " нс");
 

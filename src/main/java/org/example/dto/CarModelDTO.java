@@ -39,10 +39,8 @@ public class CarModelDTO {
 
     @Override
     public boolean equals(Object o) {
-        // Сравнение ссылок
         if (this == o) return true;
 
-        // Проверка типа объекта
         if (!(o instanceof CarModelDTO)) return false;
 
         CarModelDTO that = (CarModelDTO) o;
