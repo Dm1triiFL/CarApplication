@@ -1,43 +1,37 @@
 package org.example.repository;
 
+import org.example.database.DatabaseConnection;
 import org.example.entity.DealerEntity;
+import org.example.entity.CarEntity;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DealerRepository {
-    private final Connection connection;
 
-    public DealerRepository(Connection connection) {
-        this.connection = connection;
-    }
-
-    public void create(DealerEntity dealer) {
-        String sql = "INSERT INTO dealership (name, address) VALUES (?, ?)";
-
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+    public void insertDealer(DealerEntity dealer) {
+        String sql = "INSERT INTO Dealership (name) VALUES (?)";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, dealer.getName());
-            statement.setString(2, dealer.getAddress());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public DealerEntity read(long id) {
-        String sql = "SELECT * FROM dealership WHERE id = ?";
+    public DealerEntity getDealer(String name) {
+        String sql = "SELECT * FROM Dealership WHERE name = ?";
         DealerEntity dealer = null;
-
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(1, id);
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                dealer = new DealerEntity(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("address")
-                );
+                dealer = new DealerEntity();
+                dealer.setName(resultSet.getString("name"));
+                dealer.setCars(getCarsByDealerName(name));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -45,67 +39,68 @@ public class DealerRepository {
         return dealer;
     }
 
-    public void update(DealerEntity dealer) {
-        String sql = "UPDATE dealership SET name = ?, address = ? WHERE id = ?";
+    public List<DealerEntity> getAllDealers() {
+        String sql = "SELECT * FROM Dealership";
+        List<DealerEntity> dealers = new ArrayList<>();
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                DealerEntity dealer = new DealerEntity();
+                dealer.setName(resultSet.getString("name"));
+                dealer.setCars(getCarsByDealerName(dealer.getName()));
+                dealers.add(dealer);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return dealers;
+    }
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+    public void updateDealer(DealerEntity dealer) {
+        String sql = "UPDATE Dealership SET name = ? WHERE name = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, dealer.getName());
-            statement.setString(2, dealer.getAddress());
-            statement.setLong(3, dealer.getId());
+            statement.setString(2, dealer.getName());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void delete(long id) {
-        String sql = "DELETE FROM dealership WHERE id = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(1, id);
+    public void deleteDealer(String name) {
+        String sql = "DELETE FROM Dealership WHERE name = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, name);
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public List<DealerEntity> findAll() {
-        List<DealerEntity> dealers = new ArrayList<>();
-        String sql = "SELECT * FROM dealership";
-
-        try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
+    private List<CarEntity> getCarsByDealerName(String dealershipName) {
+        List<CarEntity> cars = new ArrayList<>();
+        String sql = "SELECT * FROM Car WHERE dealershipName = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, dealershipName);
+            ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                DealerEntity dealer = new DealerEntity(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("address")
-                );
-                dealers.add(dealer);
+                CarEntity car = new CarEntity();
+                car.setId(resultSet.getInt("id"));
+                car.setCarModelId(resultSet.getInt("carModelId"));
+                car.setDealershipName(resultSet.getString("dealershipName"));
+                car.setState(resultSet.getString("state"));
+                car.setConfiguration(resultSet.getString("configuration"));
+                car.setColor(resultSet.getString("color"));
+                car.setPrice(resultSet.getDouble("price"));
+                cars.add(car);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return dealers;
-    }
-
-    public List<DealerEntity> findByCondition(String condition) {
-        List<DealerEntity> dealers = new ArrayList<>();
-        String sql = "SELECT * FROM dealership WHERE " + condition;
-
-        try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
-            while (resultSet.next()) {
-                DealerEntity dealer = new DealerEntity(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("address")
-                );
-                dealers.add(dealer);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return dealers;
+        return cars;
     }
 }

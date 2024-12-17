@@ -1,25 +1,19 @@
 package org.example.entity;
 
+import java.util.List;
+
 public class DealerEntity {
-    private long id;
     private String name;
-    private String address;
+    private List<CarEntity> cars;
 
-    public DealerEntity() {}
+    public DealerEntity() {
+    }
 
-    public DealerEntity(long id, String name, String address) {
-        this.id = id;
+    public DealerEntity(String name) {
         this.name = name;
-        this.address = address;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
+    // Геттеры и сеттеры
 
     public String getName() {
         return name;
@@ -29,11 +23,11 @@ public class DealerEntity {
         this.name = name;
     }
 
-    public String getAddress() {
-        return address;
+    public List<CarEntity> getCars() {
+        return cars;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setCars(List<CarEntity> cars) {
+        this.cars = cars;
     }
 }

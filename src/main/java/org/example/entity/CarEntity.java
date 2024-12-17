@@ -2,24 +2,25 @@ package org.example.entity;
 
 public class CarEntity {
     private int id;
-    private CarModelEntity carModel;
-    private DealerEntity dealership;
+    private int carModelId;
+    private String dealershipName;
     private String state;
     private String configuration;
     private String color;
     private double price;
 
-    public CarEntity() {}
+    public CarEntity() {
+    }
 
-    public CarEntity(int id, CarModelEntity carModel, DealerEntity dealership, String state, String configuration, String color, double price) {
-        this.id = id;
-        this.carModel = carModel;
-        this.dealership = dealership;
+    public CarEntity(int carModelId, String dealershipName, String state, String configuration, String color, double price) {
+        this.carModelId = carModelId;
+        this.dealershipName = dealershipName;
         this.state = state;
         this.configuration = configuration;
         this.color = color;
         this.price = price;
     }
+
 
     public int getId() {
         return id;
@@ -29,20 +30,20 @@ public class CarEntity {
         this.id = id;
     }
 
-    public CarModelEntity getCarModel() {
-        return carModel;
+    public int getCarModelId() {
+        return carModelId;
     }
 
-    public void setCarModel(CarModelEntity carModel) {
-        this.carModel = carModel;
+    public void setCarModelId(int carModelId) {
+        this.carModelId = carModelId;
     }
 
-    public DealerEntity getDealership() {
-        return dealership;
+    public String getDealershipName() {
+        return dealershipName;
     }
 
-    public void setDealership(DealerEntity dealership) {
-        this.dealership = dealership;
+    public void setDealershipName(String dealershipName) {
+        this.dealershipName = dealershipName;
     }
 
     public String getState() {

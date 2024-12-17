@@ -7,15 +7,16 @@ public class CarModelEntity {
     private String countryOrigin;
     private String countryCode;
 
-    public CarModelEntity() {}
+    public CarModelEntity() {
+    }
 
-    public CarModelEntity(long id, String brand, String model, String countryOrigin, String countryCode) {
-        this.id = id;
+    public CarModelEntity(String brand, String model, String countryOrigin, String countryCode) {
         this.brand = brand;
         this.model = model;
         this.countryOrigin = countryOrigin;
         this.countryCode = countryCode;
     }
+
 
     public long getId() {
         return id;

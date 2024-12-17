@@ -1,28 +1,23 @@
--- Таблица моделей автомобилей
-CREATE TABLE car_model (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    brand VARCHAR(50) NOT NULL,
-    model VARCHAR(50) NOT NULL,
-    country_origin VARCHAR(50),
-    country_code VARCHAR(10)
+CREATE TABLE CarModel (
+    id BIGINT PRIMARY KEY,
+    brand VARCHAR(255) NOT NULL,
+    model VARCHAR(255) NOT NULL,
+    countryOrigin VARCHAR(255),
+    countryCode VARCHAR(10)
 );
 
--- Таблица дилеров
-CREATE TABLE dealership (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    address VARCHAR(255)
+CREATE TABLE Dealership (
+    name VARCHAR(255) PRIMARY KEY
 );
 
--- Таблица автомобилей
-CREATE TABLE car (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    car_model_id BIGINT,
-    dealership_id BIGINT,
-    state VARCHAR(20),
-    configuration VARCHAR(100),
-    color VARCHAR(20),
-    price DECIMAL(10, 2),
-    FOREIGN KEY (car_model_id) REFERENCES car_model(id),
-    FOREIGN KEY (dealership_id) REFERENCES dealership(id)
+CREATE TABLE Car (
+    id INT PRIMARY KEY,
+    carModelId BIGINT,
+    dealershipName VARCHAR(255),
+    state VARCHAR(50),
+    configuration VARCHAR(255),
+    color VARCHAR(50),
+    price DOUBLE,
+    FOREIGN KEY (carModelId) REFERENCES CarModel(id),
+    FOREIGN KEY (dealershipName) REFERENCES Dealership(name)
 );
