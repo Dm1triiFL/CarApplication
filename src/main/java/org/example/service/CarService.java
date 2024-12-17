@@ -3,17 +3,18 @@ package org.example.service;
 import org.example.dto.CarDTO;
 import org.example.dto.CarModelDTO;
 import org.example.dto.DealershipDTO;
-
+import org.example.entity.CarEntity;
+import org.example.mapper.CarMapper; // Убедитесь, что импортируете правильный класс
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class CarService {
     private Random random = new Random();
+    private final CarMapper carMapper = CarMapper.INSTANCE; // Исправлено на правильный тип и имя переменной
 
     public CarDTO createCarWithRandomValues(int id, DealershipDTO dealership) {
-
-
-
-        // измерение времни
+        // Измерение времени
         long startTime = System.nanoTime();
 
         String[] states = {"Не занят", "В пути", "В наличии", "Продан", "Забронирован"};
@@ -35,7 +36,7 @@ public class CarService {
 
         CarDTO car = new CarDTO(id, carModel, dealership, state, configuration, color, price);
 
-        // время окончания
+        // Время окончания
         long endTime = System.nanoTime();
         System.out.println("Время выполнения createCarWithRandomValues: " + (endTime - startTime) + " нс");
 
@@ -49,5 +50,25 @@ public class CarService {
         }
         long endTime = System.nanoTime();
         System.out.println("Время выполнения для " + numberOfCreations + " созданий: " + (endTime - startTime) + " нс");
+    }
+
+    public CarEntity convertToEntity(CarDTO carDTO) {
+        return carMapper.toEntity(carDTO);
+    }
+
+    public CarDTO convertToDTO(CarEntity carEntity) {
+        return carMapper.toDTO(carEntity);
+    }
+
+    public List<CarEntity> convertToEntities(List<CarDTO> carDTOs) {
+        return carDTOs.stream()
+                .map(this::convertToEntity)
+                .collect(Collectors.toList());
+    }
+
+    public List<CarDTO> convertToDTOs(List<CarEntity> carEntities) {
+        return carEntities.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 }

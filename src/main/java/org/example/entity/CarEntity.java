@@ -1,9 +1,23 @@
 package org.example.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
+@Entity
 public class CarEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int carModelId;
-    private String dealershipName;
+
+    @ManyToOne // Связь с CarModelEntity
+    private CarModelEntity carModel;
+
+    @ManyToOne // Связь с DealershipEntity
+    private DealershipEntity dealership;
+
     private String state;
     private String configuration;
     private String color;
@@ -12,16 +26,16 @@ public class CarEntity {
     public CarEntity() {
     }
 
-    public CarEntity(int carModelId, String dealershipName, String state, String configuration, String color, double price) {
-        this.carModelId = carModelId;
-        this.dealershipName = dealershipName;
+    public CarEntity(CarModelEntity carModel, DealershipEntity dealership, String state, String configuration, String color, double price) {
+        this.carModel = carModel;
+        this.dealership = dealership;
         this.state = state;
         this.configuration = configuration;
         this.color = color;
         this.price = price;
     }
 
-
+    // Геттеры и сеттеры
     public int getId() {
         return id;
     }
@@ -30,20 +44,20 @@ public class CarEntity {
         this.id = id;
     }
 
-    public int getCarModelId() {
-        return carModelId;
+    public CarModelEntity getCarModel() {
+        return carModel;
     }
 
-    public void setCarModelId(int carModelId) {
-        this.carModelId = carModelId;
+    public void setCarModel(CarModelEntity carModel) {
+        this.carModel = carModel;
     }
 
-    public String getDealershipName() {
-        return dealershipName;
+    public DealershipEntity getDealership() {
+        return dealership;
     }
 
-    public void setDealershipName(String dealershipName) {
-        this.dealershipName = dealershipName;
+    public void setDealership(DealershipEntity dealership) {
+        this.dealership = dealership;
     }
 
     public String getState() {
@@ -77,4 +91,13 @@ public class CarEntity {
     public void setPrice(double price) {
         this.price = price;
     }
+
+    public void setCarModelId(int carModelId) {
+        this.id = carModelId;
+    }
+
+    public void setDealershipName(DealershipEntity dealershipName) {
+        this.dealership = dealershipName;
+    }
+
 }

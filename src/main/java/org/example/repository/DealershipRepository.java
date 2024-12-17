@@ -1,16 +1,16 @@
 package org.example.repository;
 
 import org.example.database.DatabaseConnection;
-import org.example.entity.DealerEntity;
+import org.example.entity.DealershipEntity;
 import org.example.entity.CarEntity;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DealerRepository {
+public class DealershipRepository {
 
-    public void insertDealer(DealerEntity dealer) {
+    public void insertDealer(DealershipEntity dealer) {
         String sql = "INSERT INTO Dealership (name) VALUES (?)";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -21,15 +21,15 @@ public class DealerRepository {
         }
     }
 
-    public DealerEntity getDealer(String name) {
+    public DealershipEntity getDealer(String name) {
         String sql = "SELECT * FROM Dealership WHERE name = ?";
-        DealerEntity dealer = null;
+        DealershipEntity dealer = null;
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                dealer = new DealerEntity();
+                dealer = new DealershipEntity();
                 dealer.setName(resultSet.getString("name"));
                 dealer.setCars(getCarsByDealerName(name));
             }
@@ -39,14 +39,14 @@ public class DealerRepository {
         return dealer;
     }
 
-    public List<DealerEntity> getAllDealers() {
+    public List<DealershipEntity> getAllDealers() {
         String sql = "SELECT * FROM Dealership";
-        List<DealerEntity> dealers = new ArrayList<>();
+        List<DealershipEntity> dealers = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
-                DealerEntity dealer = new DealerEntity();
+                DealershipEntity dealer = new DealershipEntity();
                 dealer.setName(resultSet.getString("name"));
                 dealer.setCars(getCarsByDealerName(dealer.getName()));
                 dealers.add(dealer);
@@ -57,7 +57,7 @@ public class DealerRepository {
         return dealers;
     }
 
-    public void updateDealer(DealerEntity dealer) {
+    public void updateDealer(DealershipEntity dealer) {
         String sql = "UPDATE Dealership SET name = ? WHERE name = ?";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

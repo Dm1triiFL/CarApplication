@@ -2,6 +2,8 @@ package org.example.service;
 
 import com.opencsv.exceptions.CsvValidationException;
 import org.example.dto.CarModelDTO;
+import org.example.entity.CarModelEntity;
+import org.example.mapper.CarModelMapper; // Убедитесь, что вы импортируете правильный класс
 import com.opencsv.CSVReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,12 +12,14 @@ import java.util.stream.Collectors;
 
 public class CarModelServiceImpl implements CarModelService {
     private List<CarModelDTO> carModelList = new ArrayList<>();
+    private final CarModelMapper carModelMapper = CarModelMapper.INSTANCE; // Правильное именование
 
     @Override
     public void load(String fileName) {
         try (CSVReader csvReader = new CSVReader(new FileReader(fileName))) {
             String[] values;
 
+            // Считывание заголовков
             csvReader.readNext();
 
             while ((values = csvReader.readNext()) != null) {
@@ -37,10 +41,8 @@ public class CarModelServiceImpl implements CarModelService {
                     System.err.println("Ошибка формата числа в строке: " + String.join(", ", values));
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | CsvValidationException e) {
             e.printStackTrace();
-        } catch (CsvValidationException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -54,33 +56,25 @@ public class CarModelServiceImpl implements CarModelService {
     @Override
     public Optional<CarModelDTO> findCarById(CarModelDTO car) {
         CarModelDTO searchCar = new CarModelDTO(car.getId(), null, null, null, null);
-        if (carModelList.contains(searchCar)) {
-            return carModelList.stream()
-                    .filter(c -> c.equals(car))
-                    .findFirst();
-        } else {
-            return Optional.empty();
-        }
+        return carModelList.stream()
+                .filter(c -> c.equals(searchCar))
+                .findFirst();
     }
 
     @Override
     public Map<String, Integer> getCarModelGroupByModel(String brand) {
         Map<String, Integer> modelCountMap = new HashMap<>();
-        for (CarModelDTO car : carModelList) {
-            if (car.getBrand().equalsIgnoreCase(brand)) {
-                modelCountMap.put(car.getModel(), modelCountMap.getOrDefault(car.getModel(), 0) + 1);
-            }
-        }
+        carModelList.stream()
+                .filter(car -> car.getBrand().equalsIgnoreCase(brand))
+                .forEach(car -> modelCountMap.put(car.getModel(), modelCountMap.getOrDefault(car.getModel(), 0) + 1));
         return modelCountMap;
     }
 
     @Override
     public Set<String> getUniqueBrands() {
-        Set<String> uniqueBrands = new HashSet<>();
-        for (CarModelDTO car : carModelList) {
-            uniqueBrands.add(car.getBrand());
-        }
-        return uniqueBrands;
+        return carModelList.stream()
+                .map(CarModelDTO::getBrand)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -95,9 +89,27 @@ public class CarModelServiceImpl implements CarModelService {
     @Override
     public Map<String, Integer> groupByBrand() {
         Map<String, Integer> brandCountMap = new HashMap<>();
-        for (CarModelDTO car : carModelList) {
-            brandCountMap.put(car.getBrand(), brandCountMap.getOrDefault(car.getBrand(), 0) + 1);
-        }
+        carModelList.forEach(car -> brandCountMap.put(car.getBrand(), brandCountMap.getOrDefault(car.getBrand(), 0) + 1));
         return brandCountMap;
+    }
+
+    public CarModelEntity convertToEntity(CarModelDTO carModelDTO) {
+        return carModelMapper.toEntity(carModelDTO);
+    }
+
+    public CarModelDTO convertToDTO(CarModelEntity carModelEntity) {
+        return carModelMapper.toDTO(carModelEntity);
+    }
+
+    public List<CarModelDTO> convertToDTOs(List<CarModelEntity> carModelEntities) {
+        return carModelEntities.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<CarModelEntity> convertToEntities(List<CarModelDTO> carModelDTOs) {
+        return carModelDTOs.stream()
+                .map(this::convertToEntity)
+                .collect(Collectors.toList());
     }
 }
