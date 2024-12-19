@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CarEntityRepository {
+public class CarRepository {
 
     public void create(CarEntity car) {
         String sql = "INSERT INTO Car (id, carModelId, dealershipName, state, configuration, color, price) VALUES (?, ?, ?, ?, ?, ?, ?)";
