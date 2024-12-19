@@ -6,57 +6,38 @@ import org.example.entity.CarModelEntity;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CarModelRepository {
 
-    public void insertCarModel(CarModelEntity carModel) {
-        String sql = "INSERT INTO CarModel (brand, model, countryOrigin, countryCode) VALUES (?, ?, ?, ?)";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, carModel.getBrand());
-            statement.setString(2, carModel.getModel());
-            statement.setString(3, carModel.getCountryOrigin());
-            statement.setString(4, carModel.getCountryCode());
-            statement.executeUpdate();
+    public void create(CarModelEntity carModel) {
+        String sql = "INSERT INTO CarModel (id, brand, model, countryOrigin, countryCode) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, carModel.getId());
+            stmt.setString(2, carModel.getBrand());
+            stmt.setString(3, carModel.getModel());
+            stmt.setString(4, carModel.getCountryOrigin());
+            stmt.setString(5, carModel.getCountryCode());
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public CarModelEntity getCarModel(long id) {
-        String sql = "SELECT * FROM CarModel WHERE id = ?";
-        CarModelEntity carModel = null;
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                carModel = new CarModelEntity();
-                carModel.setId(resultSet.getLong("id"));
-                carModel.setBrand(resultSet.getString("brand"));
-                carModel.setModel(resultSet.getString("model"));
-                carModel.setCountryOrigin(resultSet.getString("countryOrigin"));
-                carModel.setCountryCode(resultSet.getString("countryCode"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return carModel;
-    }
-
-    public List<CarModelEntity> getAllCarModels() {
-        String sql = "SELECT * FROM CarModel";
+    public List<CarModelEntity> findAll() {
         List<CarModelEntity> carModels = new ArrayList<>();
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()) {
-            while (resultSet.next()) {
-                CarModelEntity carModel = new CarModelEntity();
-                carModel.setId(resultSet.getLong("id"));
-                carModel.setBrand(resultSet.getString("brand"));
-                carModel.setModel(resultSet.getString("model"));
-                carModel.setCountryOrigin(resultSet.getString("countryOrigin"));
-                carModel.setCountryCode(resultSet.getString("countryCode"));
+        String sql = "SELECT * FROM CarModel";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                CarModelEntity carModel = new CarModelEntity(
+                        rs.getInt("id"),
+                        rs.getString("brand"),
+                        rs.getString("model"),
+                        rs.getString("countryOrigin"),
+                        rs.getString("countryCode"));
                 carModels.add(carModel);
             }
         } catch (SQLException e) {
@@ -65,27 +46,48 @@ public class CarModelRepository {
         return carModels;
     }
 
-    public void updateCarModel(CarModelEntity carModel) {
+    public Optional<CarModelEntity> findById(int id) {
+        String sql = "SELECT * FROM CarModel WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                CarModelEntity carModel = new CarModelEntity(
+                        rs.getInt("id"),
+                        rs.getString("brand"),
+                        rs.getString("model"),
+                        rs.getString("countryOrigin"),
+                        rs.getString("countryCode"));
+                return Optional.of(carModel);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
+    public void update(CarModelEntity carModel) {
         String sql = "UPDATE CarModel SET brand = ?, model = ?, countryOrigin = ?, countryCode = ? WHERE id = ?";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, carModel.getBrand());
-            statement.setString(2, carModel.getModel());
-            statement.setString(3, carModel.getCountryOrigin());
-            statement.setString(4, carModel.getCountryCode());
-            statement.setLong(5, carModel.getId());
-            statement.executeUpdate();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, carModel.getBrand());
+            stmt.setString(2, carModel.getModel());
+            stmt.setString(3, carModel.getCountryOrigin());
+            stmt.setString(4, carModel.getCountryCode());
+            stmt.setInt(5, carModel.getId());
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void deleteCarModel(long id) {
+    public void delete(int id) {
         String sql = "DELETE FROM CarModel WHERE id = ?";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(1, id);
-            statement.executeUpdate();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }

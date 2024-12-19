@@ -5,16 +5,20 @@ import org.example.dto.CarModelDTO;
 import org.example.dto.DealershipDTO;
 import org.example.entity.CarEntity;
 import org.example.mapper.CarMapper; // Убедитесь, что импортируете правильный класс
-import java.util.List;
+
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class CarService {
-    private Random random = new Random();
-    private final CarMapper carMapper = CarMapper.INSTANCE; // Исправлено на правильный тип и имя переменной
+
+    private final Random random = new Random();
+    private final CarMapper carMapper;
+
+    // Конструктор для инициализации CarMapper
+    public CarService(CarMapper carMapper) {
+        this.carMapper = carMapper;
+    }
 
     public CarDTO createCarWithRandomValues(int id, DealershipDTO dealership) {
-        // Измерение времени
         long startTime = System.nanoTime();
 
         String[] states = {"Не занят", "В пути", "В наличии", "Продан", "Забронирован"};
@@ -36,39 +40,24 @@ public class CarService {
 
         CarDTO car = new CarDTO(id, carModel, dealership, state, configuration, color, price);
 
-        // Время окончания
         long endTime = System.nanoTime();
         System.out.println("Время выполнения createCarWithRandomValues: " + (endTime - startTime) + " нс");
 
         return car;
     }
 
+    public void saveCar(CarDTO carDTO) {
+        CarEntity carEntity = carMapper.carDTOToCarEntity(carDTO);
+        System.out.println("Сохранен автомобиль: " + carEntity);
+    }
+
     public void measurePerformanceForMultipleCreations(int numberOfCreations, DealershipDTO dealership) {
         long startTime = System.nanoTime();
         for (int i = 0; i < numberOfCreations; i++) {
-            createCarWithRandomValues(i, dealership);
+            CarDTO car = createCarWithRandomValues(i, dealership);
+            saveCar(car); // Сохраняем каждый созданный автомобиль
         }
         long endTime = System.nanoTime();
-        System.out.println("Время выполнения для " + numberOfCreations + " созданий: " + (endTime - startTime) + " нс");
-    }
-
-    public CarEntity convertToEntity(CarDTO carDTO) {
-        return carMapper.toEntity(carDTO);
-    }
-
-    public CarDTO convertToDTO(CarEntity carEntity) {
-        return carMapper.toDTO(carEntity);
-    }
-
-    public List<CarEntity> convertToEntities(List<CarDTO> carDTOs) {
-        return carDTOs.stream()
-                .map(this::convertToEntity)
-                .collect(Collectors.toList());
-    }
-
-    public List<CarDTO> convertToDTOs(List<CarEntity> carEntities) {
-        return carEntities.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        System.out.println("Время выполнения measurePerformanceForMultipleCreations: " + (endTime - startTime) + " нс");
     }
 }

@@ -1,37 +1,25 @@
 package org.example.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-@Entity
 public class CarModelEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
+    private int id;
     private String brand;
     private String model;
     private String countryOrigin;
     private String countryCode;
 
-    public CarModelEntity() {
-    }
-
-    public CarModelEntity(String brand, String model, String countryOrigin, String countryCode) {
+    public CarModelEntity(int id, String brand, String model, String countryOrigin, String countryCode) {
+        this.id = id;
         this.brand = brand;
         this.model = model;
         this.countryOrigin = countryOrigin;
         this.countryCode = countryCode;
     }
 
-    // Геттеры и сеттеры
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

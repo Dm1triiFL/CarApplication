@@ -1,5 +1,5 @@
 CREATE TABLE CarModel (
-    id BIGINT PRIMARY KEY,
+    id INT PRIMARY KEY,
     brand VARCHAR(255) NOT NULL,
     model VARCHAR(255) NOT NULL,
     countryOrigin VARCHAR(255),
@@ -12,7 +12,7 @@ CREATE TABLE Dealership (
 
 CREATE TABLE Car (
     id INT PRIMARY KEY,
-    carModelId BIGINT,
+    carModelId INT,
     dealershipName VARCHAR(255),
     state VARCHAR(50),
     configuration VARCHAR(255),

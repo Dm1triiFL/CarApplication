@@ -3,8 +3,9 @@ package org.example.service;
 import com.opencsv.exceptions.CsvValidationException;
 import org.example.dto.CarModelDTO;
 import org.example.entity.CarModelEntity;
-import org.example.mapper.CarModelMapper; // Убедитесь, что вы импортируете правильный класс
+import org.example.mapper.CarMapper;
 import com.opencsv.CSVReader;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class CarModelServiceImpl implements CarModelService {
     private List<CarModelDTO> carModelList = new ArrayList<>();
-    private final CarModelMapper carModelMapper = CarModelMapper.INSTANCE; // Правильное именование
+    private final CarMapper carMapper = CarMapper.INSTANCE;
 
     @Override
     public void load(String fileName) {
@@ -55,9 +56,8 @@ public class CarModelServiceImpl implements CarModelService {
 
     @Override
     public Optional<CarModelDTO> findCarById(CarModelDTO car) {
-        CarModelDTO searchCar = new CarModelDTO(car.getId(), null, null, null, null);
         return carModelList.stream()
-                .filter(c -> c.equals(searchCar))
+                .filter(c -> c.getId() == car.getId()) // Поиск по идентификатору
                 .findFirst();
     }
 
@@ -94,22 +94,22 @@ public class CarModelServiceImpl implements CarModelService {
     }
 
     public CarModelEntity convertToEntity(CarModelDTO carModelDTO) {
-        return carModelMapper.toEntity(carModelDTO);
+        return carMapper.carModelDTOToCarModelEntity(carModelDTO);
     }
 
     public CarModelDTO convertToDTO(CarModelEntity carModelEntity) {
-        return carModelMapper.toDTO(carModelEntity);
+        return carMapper.carModelEntityToCarModelDTO(carModelEntity);
     }
 
-    public List<CarModelDTO> convertToDTOs(List<CarModelEntity> carModelEntities) {
-        return carModelEntities.stream()
-                .map(this::convertToDTO)
+    public List<CarModelEntity> convertAllToEntities() {
+        return carModelList.stream()
+                .map(this::convertToEntity)
                 .collect(Collectors.toList());
     }
 
-    public List<CarModelEntity> convertToEntities(List<CarModelDTO> carModelDTOs) {
-        return carModelDTOs.stream()
-                .map(this::convertToEntity)
+    public List<CarModelDTO> convertAllToDTOs(List<CarModelEntity> carModelEntities) {
+        return carModelEntities.stream()
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 }

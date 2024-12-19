@@ -6,6 +6,7 @@ import org.example.dto.DealershipDTO;
 import org.example.service.CarModelService;
 import org.example.service.CarModelServiceImpl;
 import org.example.service.CarService;
+import org.example.mapper.CarMapper; // Импортируем CarMapper
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,8 @@ public class Main {
     public static void main(String[] args) {
         // Создание экземпляров сервисов
         CarModelService carModelService = new CarModelServiceImpl();
-        CarService carService = new CarService();
+        CarMapper carMapper = CarMapper.INSTANCE;
+        CarService carService = new CarService(carMapper);
 
         // Загрузка данных из CSV-файла
         String filePath = "src\\main\\resources\\cars.csv";
@@ -31,24 +33,24 @@ public class Main {
             toyotaCars.forEach(car -> System.out.println(car));
         }
 
-        //   2: Поиск автомобиля по ID
+        // 2: Поиск автомобиля по ID
         System.out.println("\n2: Поиск автомобиля по ID:");
         CarModelDTO searchById = new CarModelDTO(3L, null, null, null, null); // Ищем по ID = 3
         Optional<CarModelDTO> foundById = carModelService.findCarById(searchById);
         foundById.ifPresent(car -> System.out.println("Найденный автомобиль: " + car));
 
-        //   3: Группировка автомобилей по моделям
+        // 3: Группировка автомобилей по моделям
         System.out.println("\n3: Группировка автомобилей марки BMW по моделям:");
         Map<String, Integer> modelCountMap = carModelService.getCarModelGroupByModel("BMW");
         modelCountMap.forEach((model, count) ->
                 System.out.println("Модель: " + model + ", Количество: " + count));
 
-        //  4: Получение уникальных марок автомобилей
+        // 4: Получение уникальных марок автомобилей
         System.out.println("\n4: Уникальные марки автомобилей:");
         Set<String> uniqueBrands = carModelService.getUniqueBrands();
         uniqueBrands.forEach(System.out::println);
 
-        //  5  Поиск моделей по марке
+        // 5: Поиск моделей по марке
         String brandToSearch = "Toyota";
         System.out.println("\n5: Модели автомобилей марки " + brandToSearch + ":");
         List<String> toyotaModels = carModelService.findModelsByBrand(brandToSearch);
@@ -58,7 +60,7 @@ public class Main {
             toyotaModels.forEach(System.out::println);
         }
 
-        // 6: группировка по марке автомобилей
+        // 6: Группировка автомобилей по марке
         System.out.println("\n6: Группировка автомобилей по марке:");
         Map<String, Integer> brandCountMap = carModelService.groupByBrand();
         brandCountMap.forEach((brand, count) ->
